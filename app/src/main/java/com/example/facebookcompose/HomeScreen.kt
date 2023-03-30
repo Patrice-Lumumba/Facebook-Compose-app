@@ -23,6 +23,9 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import co.composables.fbcompose.HomeScreenState
+import co.composables.fbcompose.HomeScreenViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.facebookcompose.ui.theme.ButtonGray
@@ -31,18 +34,41 @@ import java.security.Key
 
 @Composable
 fun HomeScreen(){
+    val viewModel = viewModel<HomeScreenViewModel>()
+    val state by viewModel.state.collectAsState()
+    when(state) {
+        is HomeScreenState.Loaded -> HomeScreenContents()
+        HomeScreenState.Loading -> LoadingScreen()
+        HomeScreenState.SignInRequired -> TODO()
+    }
+    HomeScreenContents()
+}
+
+@Composable
+fun LoadingScreen() {
+    Box(Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colors.surface),
+        contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun HomeScreenContents() {
     Box(
         Modifier
             .background(MaterialTheme.colors.background)
-            .fillMaxSize()) {
-        LazyColumn{
-            item{
+            .fillMaxSize()
+    ) {
+        LazyColumn {
+            item {
                 TopAppBar()
             }
-            item{
+            item {
                 TabBar()
             }
-            item{
+            item {
                 StatusUpdateBar(
                     avatarUrl = "https://www.composables.co/_next/image?url=%2Fstatic%2Fimages%2Favatar.png&w=256&q=75",
                     onTextChange = {
@@ -145,9 +171,10 @@ fun StatusUpdateBar(
 ) {
     Surface {
         Column {
-            Row(Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 12.dp),
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                 AsyncImage(model = ImageRequest.Builder(LocalContext.current).data(avatarUrl)
                     .crossfade(true).placeholder(R.drawable.ic_placeholder).build(),
@@ -211,11 +238,12 @@ fun VerticalDivider(
     } else {
         thickness
     }
-    Box(modifier
-        .then(indentMod)
-        .fillMaxHeight()
-        .width(targetThickness)
-        .background(color = color))
+    Box(
+        modifier
+            .then(indentMod)
+            .fillMaxHeight()
+            .width(targetThickness)
+            .background(color = color))
 }
 
 

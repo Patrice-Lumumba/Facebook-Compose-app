@@ -29,6 +29,9 @@ class MainActivity : ComponentActivity() {
                     composable("home"){
                         HomeScreen()
                     }
+                    composable("signin"){
+
+                    }
                 }
             }
         }
